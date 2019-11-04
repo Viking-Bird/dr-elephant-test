@@ -21,7 +21,6 @@ import com.avaje.ebean.Query;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.linkedin.drelephant.DrElephant;
 import com.linkedin.drelephant.ElephantContext;
 import com.linkedin.drelephant.analysis.Metrics;
 import com.linkedin.drelephant.analysis.Severity;
@@ -863,20 +862,11 @@ public class Application extends Controller {
     return unixTime;
   }
 
-  private static AppResult getAppResultForId(String id) {
-    return AppResult.find.select("*")
-        .fetch(AppResult.TABLE.APP_HEURISTIC_RESULTS, "*")
-        .fetch(AppResult.TABLE.APP_HEURISTIC_RESULTS + "." + AppHeuristicResult.TABLE.APP_HEURISTIC_RESULT_DETAILS, "*")
-        .where()
-        .idEq(id)
-        .findUnique();
-  }
-
   /**
    * Rest API for searching a particular job information
-   * E.g, localhost:8080/rest/job?id=xyz&prioritize=true
+   * E.g, localhost:8080/rest/job?id=xyz
    */
-  public static Result restAppResult(String id, Boolean prioritize) {
+  public static Result restAppResult(String id) {
 
     if (id == null || id.isEmpty()) {
       return badRequest("No job id provided.");
@@ -885,20 +875,18 @@ public class Application extends Controller {
       id = id.replaceAll("job", "application");
     }
 
-    AppResult result = getAppResultForId(id);
+    AppResult result = AppResult.find.select("*")
+        .fetch(AppResult.TABLE.APP_HEURISTIC_RESULTS, "*")
+        .fetch(AppResult.TABLE.APP_HEURISTIC_RESULTS + "." + AppHeuristicResult.TABLE.APP_HEURISTIC_RESULT_DETAILS, "*")
+        .where()
+        .idEq(id)
+        .findUnique();
 
     if (result != null) {
       return ok(Json.toJson(result));
+    } else {
+      return notFound("Unable to find record on id: " + id);
     }
-    // If prioritize flag is set, resubmit the job at higher priority and wait for it to complete.
-    if (prioritize && DrElephant.getInstance().getElephant().prioritizeExecutionAndWait(id)) {
-      // The analysis job has completed. Get the result.
-      result = getAppResultForId(id);
-    }
-    if (result != null) {
-      return ok(Json.toJson(result));
-    }
-    return notFound("Unable to find record on id: " + id);
   }
 
   /**

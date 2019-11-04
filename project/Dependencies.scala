@@ -28,7 +28,7 @@ object Dependencies {
   lazy val jacksonVersion = "2.5.3"
   lazy val jerseyVersion = "2.24"
   lazy val jsoupVersion = "1.7.3"
-  lazy val mysqlConnectorVersion = "5.1.36"
+  lazy val mysqlConnectorVersion = "8.0.13"
   lazy val oozieClientVersion = "4.2.0"
 
   lazy val HADOOP_VERSION = "hadoopversion"
@@ -39,7 +39,7 @@ object Dependencies {
     hadoopVersion = System.getProperties.getProperty(HADOOP_VERSION)
   }
 
-  var sparkVersion = "1.4.0"
+  var sparkVersion = "2.1.2"
   if (System.getProperties.getProperty(SPARK_VERSION) != null) {
     sparkVersion = System.getProperties.getProperty(SPARK_VERSION)
   }
@@ -70,8 +70,6 @@ object Dependencies {
     "mysql" % "mysql-connector-java" % mysqlConnectorVersion,
     "org.apache.hadoop" % "hadoop-auth" % hadoopVersion % "compileonly",
     "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion % "compileonly",
-    "org.apache.hadoop" % "hadoop-mapreduce-client-common" % hadoopVersion % "compileonly",
-    "org.apache.hadoop" % "hadoop-mapreduce-client-common" % hadoopVersion % Test,
     "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion % Test,
     "org.apache.hadoop" % "hadoop-common" % hadoopVersion % "compileonly",
     "org.apache.hadoop" % "hadoop-common" % hadoopVersion % Test,

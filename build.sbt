@@ -23,9 +23,6 @@ version := "2.1.7"
 
 organization := "com.linkedin.drelephant"
 
-// Enable CPD SBT plugin
-lazy val root = (project in file(".")).enablePlugins(CopyPasteDetector)
-
 javacOptions in Compile ++= Seq("-source", "1.6", "-target", "1.6")
 
 libraryDependencies ++= dependencies map { _.excludeAll(exclusionRules: _*) }

@@ -19,7 +19,6 @@ package com.linkedin.drelephant;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.linkedin.drelephant.analysis.ApplicationType;
-import com.linkedin.drelephant.analysis.ElephantBackfillFetcher;
 import com.linkedin.drelephant.analysis.ElephantFetcher;
 import com.linkedin.drelephant.analysis.HadoopApplicationData;
 import com.linkedin.drelephant.analysis.HadoopMetricsAggregator;
@@ -379,14 +378,6 @@ public class ElephantContext {
    */
   public ElephantFetcher getFetcherForApplicationType(ApplicationType type) {
     return _typeToFetcher.get(type);
-  }
-
-  public ElephantBackfillFetcher getBackfillFetcherForApplicationType(ApplicationType type) {
-    ElephantFetcher fetcher = _typeToFetcher.get(type);
-    if (fetcher instanceof ElephantBackfillFetcher) {
-      return (ElephantBackfillFetcher) fetcher;
-    }
-    return null;
   }
 
   public HadoopMetricsAggregator getAggregatorForApplicationType(ApplicationType type) {

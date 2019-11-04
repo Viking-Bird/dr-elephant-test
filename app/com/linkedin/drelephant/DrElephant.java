@@ -27,10 +27,9 @@ import com.linkedin.drelephant.analysis.HDFSContext;
 /**
  * The main class which starts Dr. Elephant
  */
-public class DrElephant implements Runnable {
+public class DrElephant extends Thread {
   public static final String AUTO_TUNING_ENABLED = "autotuning.enabled";
   private static final Logger logger = Logger.getLogger(DrElephant.class);
-  private static final DrElephant INSTANCE = new DrElephant();
 
   private ElephantRunner _elephant;
   private AutoTuner _autoTuner;
@@ -38,7 +37,7 @@ public class DrElephant implements Runnable {
 
   private Boolean autoTuningEnabled;
 
-  private DrElephant() {
+  public DrElephant() throws IOException {
     HDFSContext.load();
     Configuration configuration = ElephantContext.instance().getAutoTuningConf();
     autoTuningEnabled = configuration.getBoolean(AUTO_TUNING_ENABLED, false);
@@ -48,14 +47,6 @@ public class DrElephant implements Runnable {
       _autoTuner = new AutoTuner();
       _autoTunerThread = new Thread(_autoTuner, "Auto Tuner Thread");
     }
-  }
-
-  public static DrElephant getInstance() {
-    return INSTANCE;
-  }
-
-  public ElephantRunner getElephant() {
-    return _elephant;
   }
 
   @Override
