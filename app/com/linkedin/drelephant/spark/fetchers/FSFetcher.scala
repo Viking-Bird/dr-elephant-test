@@ -18,20 +18,27 @@ package com.linkedin.drelephant.spark.fetchers
 
 import com.linkedin.drelephant.analysis.{AnalyticJob, ElephantFetcher}
 import com.linkedin.drelephant.configurations.fetcher.FetcherConfigurationData
+import com.linkedin.drelephant.spark.SparkMetricsAggregator
 import com.linkedin.drelephant.spark.data.SparkApplicationData
 import com.linkedin.drelephant.spark.legacydata.LegacyDataConverters
+import org.apache.log4j.Logger
 import org.apache.spark.deploy.history.SparkFSFetcher
 
 /**
- * Wraps the SparkFSFetcher which has the actual logic to comply to the new SparkApplicationData interface
- * @param fetcherConfigurationData
- */
+  * Wraps the SparkFSFetcher which has the actual logic to comply to the new SparkApplicationData interface
+  *
+  * @param fetcherConfigurationData
+  */
 class FSFetcher(fetcherConfigurationData: FetcherConfigurationData)
   extends ElephantFetcher[SparkApplicationData] {
   lazy val legacyFetcher = new SparkFSFetcher(fetcherConfigurationData)
+  private val logger: Logger = Logger.getLogger(classOf[FSFetcher])
 
   override def fetchData(analyticJob: AnalyticJob): SparkApplicationData = {
     val legacyData = legacyFetcher.fetchData(analyticJob)
+    val executor_instance = legacyData.getEnvironmentData.getSparkProperties.get(SparkMetricsAggregator.SPARK_EXECUTOR_INSTANCES_KEY)
+    val executor_memory = legacyData.getEnvironmentData.getSparkProperties.get(SparkMetricsAggregator.SPARK_EXECUTOR_MEMORY_KEY)
+    logger.info(s"${analyticJob.getAppId} spark.executor.instances=>$executor_instance, spark.executor.memory=>$executor_memory")
     LegacyDataConverters.convert(legacyData)
   }
 }
